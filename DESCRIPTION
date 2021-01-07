@@ -1,0 +1,21 @@
+Package: relimpLMM
+Title: Calculate relative variable importance in random intercept models
+Version: 0.0.0.9000
+Authors@R: 
+    person("Oliver",
+           "Byhring",
+           email = "oliver.byhring@gmail.com",
+           role = c("aut", "cre"))
+Description: This package can be used to calculate the relative variable importance of the variables in a random intercept model with one random 
+  effect that is created using the lmer function in the lme4 package. The method used is an extension of the method suggested by Lindeman, Marenda and Gold(1980),
+  it is reviewed by Groemping(2007) in the article "Estimators of Relative Importance in Linear Regression Based on Variance Decomposition". The extension is
+  described by Byhring(2019) "Estimators of relative importance in linear regression based on variance decomposition".
+Imports:
+    lme4,
+    FrF2,
+    stats
+License: Unlimited
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1.9000
