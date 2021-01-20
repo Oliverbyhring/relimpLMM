@@ -144,6 +144,7 @@ calc.relimp.lmm <- function(lmm.obj, response.name){
   }
   ri.importance <- calc.R2(lmm.obj,F)-calc.R2(lmm.obj,T)
   importances <- c(importances,ri.importance)
-  importances <- as.data.frame(importances, row.names(c(fixef.names,random.intercept.name)))
+  importances <- data.frame(importances)
+  row.names(importances) <- c(fixef.names,random.intercept.name)
   return(importances)
 }
