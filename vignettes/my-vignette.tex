@@ -1,0 +1,459 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={relimpLMM vignette},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+
+\title{relimpLMM vignette}
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+\maketitle
+
+This vignette gives an overview over the functions in the relimpLMM
+package. This hopefully helps to understand the purpose of the functions
+and how they are used. First I will give a brief description of the
+purpose of the functions and what they do, then I will provide some
+examples of how they can be used.
+
+\hypertarget{functions}{%
+\subsection{Functions}\label{functions}}
+
+There are two main functions in this package:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  calc.R2
+
+  \begin{itemize}
+  \tightlist
+  \item
+    calculates the explained variance in a linear mixed model
+  \end{itemize}
+\item
+  calc.relimp.lmm
+
+  \begin{itemize}
+  \tightlist
+  \item
+    calculates the realative variable importance of the variables in a
+    linear mixed model
+  \end{itemize}
+\end{enumerate}
+
+\hypertarget{installing-the-package}{%
+\subsubsection{installing the package}\label{installing-the-package}}
+
+The package can be installed directly from github.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(devtools)}
+\KeywordTok{install_github}\NormalTok{(}\StringTok{"oliverbyhring/relimpLMM"}\NormalTok{)}
+\KeywordTok{library}\NormalTok{(relimpLMM)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{calc.r2}{%
+\subsection{calc.R2}\label{calc.r2}}
+
+\hypertarget{description}{%
+\subsubsection{Description}\label{description}}
+
+Defining \(R^2\) in a random intercept model is not as straightforward
+as one might first think. It is therefore not uncommon that information
+criteria are used as comparison tools for mixed models. Information
+criteria are methods that evaluate the probability of the data given the
+fitted model. These are used to compare different models, however, there
+are several limitations to using information criteria. They do not give
+any information about the overall goodness of model fit and they also
+provide no information about how much of the variance that is explained
+by the model (Nakagawa and Schielzeth 2013). It is therefore of interest
+to find a way to generalize \(R^2\) to random intercept models.
+
+When defining \(R^2\) in random intercept models a choice has to be made
+whether to define \(R^2\) as the variance explained by the fixed effect
+alone or the variance explained by the random and fixed effects
+combined. Nakagawa and Schielzeth (2013) distinguishes between
+\textit{marginal} \(R^2\), denoted \(R^2_{\textrm{LMM(m)}}\), and
+\textit{conditional} \(R^2\), denoted \(R^2_{\textrm{LMM(c)}}\).
+\(R^2_{\textrm{LMM(m)}}\) is the proportion of variance explained by the
+fixed effect components alone and \(R^2_{\textrm{LMM(c)}}\) is the
+proportion of variance explained by both the fixed effects and the
+variance of the random effects.
+
+For a random intercept model, the model equation for the \(j\)-th
+observation of the \(i\)-th individual is \begin{equation}
+    y_{ij} = \beta_0 + \gamma_{i} + \boldsymbol{\beta}^T \boldsymbol{x}_{ij} + \varepsilon_{ij} \ ,
+    \label{random_intercept_model}
+\end{equation} where \(\beta_0\) is the fixed population intercept,
+\(\boldsymbol{\beta}\) is the the \((1 \times p)\) vector of fixed
+population slopes of the covariates \(\boldsymbol{x}_{ij}\) and
+\(\gamma_{i}\) is the individual specific deviance from the population
+intercept. The residuals, \(\varepsilon_{ij}\), and the individual
+specific deviance from the population intercept is assumed to be i.i.d.
+normal with mean zero and variance \(\sigma_\varepsilon^2\) and
+\(\sigma_\gamma^2\) respectively, that is,
+
+\begin{equation*}
+\begin{split}
+    \varepsilon_{ij} &\sim \mathcal{N} \left(0, \sigma_\varepsilon^2 \right)\\
+    \gamma_{i} &\sim \mathcal{N} \left(0, \sigma_\gamma^2 \right)\ .
+\end{split}
+\end{equation*}
+
+Let \(\rho_{ij}\) be the covariance between the fixed regressors
+\(X^{(i)}\) and \(X^{(j)}\). Then for the random intercept model the
+variance from the fixed effect can be expressed as
+
+\begin{equation}
+    \begin{split}
+        \sigma_f^2 &= \textrm{Var}\left(\sum_{k=1}^n \beta_k x^{(k)}\right)\\
+        & = \sum_{i=1}^n \beta_i^2\alpha_i  +2\sum_{k=1}^{p-1}\sum_{l=k+1}^p \beta_k\beta_l\rho_{kl} ,
+    \end{split}
+    \label{fixed_effect_var}
+\end{equation} where \(\alpha_i\) is the variance of the \(i\)-th
+covariate.
+
+The expression for the marginal \(R^2\) can be written as a ratio
+between the variance of the fixed effects and the total variance, that
+is
+
+\begin{equation}
+    R^2_{\textrm{LMM(m)}} = \frac{\sigma_f^2}{\sigma_f^2 +\sigma_\gamma^2  + \sigma_\varepsilon^2} \ .
+    \label{marginalR2}
+\end{equation}
+
+Equivalently the conditional \(R^2\) can be written
+
+\begin{equation}
+    R^2_{\textrm{LMM(c)}} = \frac{\sigma_f^2 + \sigma_\gamma^2}{\sigma_f^2 +\sigma_\gamma^2 + \sigma_\varepsilon^2}\ .
+    \label{conditional_R2}
+\end{equation}
+
+\hypertarget{example}{%
+\subsubsection{Example}\label{example}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(relimpLMM)}
+\KeywordTok{library}\NormalTok{(lme4)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Loading required package: Matrix
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{data}\NormalTok{(}\StringTok{"sleepstudy"}\NormalTok{)}
+\NormalTok{RI.model <-}\StringTok{ }\KeywordTok{lmer}\NormalTok{(Reaction }\OperatorTok{~}\StringTok{ }\NormalTok{Days }\OperatorTok{+}\StringTok{ }\NormalTok{(}\DecValTok{1}\OperatorTok{|}\NormalTok{Subject), }\DataTypeTok{data =}\NormalTok{ sleepstudy)}
+\KeywordTok{calc.R2}\NormalTok{(RI.model, }\DataTypeTok{marginal.r2 =} \OtherTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##           [,1]
+## [1,] 0.7042555
+\end{verbatim}
+
+\hypertarget{calc.relimp.lmm}{%
+\subsection{calc.relimp.lmm}\label{calc.relimp.lmm}}
+
+\hypertarget{description-1}{%
+\subsubsection{Description}\label{description-1}}
+
+There exists R packages that provides relative importance measures in
+regular linear models, e.g.~relaimpo. This package uses a method
+provided by Lindeman, Merenda, and Gold (1980), often refered to as the
+LMG-method and is limited to regular linear models. Grömping (2007) has
+reviewed the method in detail and compared it to other relative variable
+importance measures. I have worked on an extension of this method and
+the function calc.relimp.lmm is the result of this work.
+
+The LMG-method aims to decompose the explained variance of a linear
+model. The relative importance assigned to a regressor can therefore be
+interpreted as the variance explained by the respective regressor. We
+begin by looking at a regular linear model of the form \begin{equation}
+    y_i = \beta_0 + \boldsymbol{\beta}^T\boldsymbol{x}_i +\varepsilon_i \ ,
+    \label{regular_LM}
+\end{equation} where \(y_i\) is the \(i\)-th response, \(\beta_0\) is
+the model intercept, \(\boldsymbol{\beta}^T\) is the vector of fixed
+slopes corresponding to the covariates \(\boldsymbol{x}_i\) with
+elements \((x_{i}^{(1)},x_{i}^{(2)},\cdots,x_{i}^{(p)})\) and
+\(\varepsilon_i\) is the \(i\)-th residual. Since there are \(p\)
+covariates, \(\boldsymbol{\beta}\) and \(\boldsymbol{x_i}\) are
+\((p \times 1)\) vectors. The residuals, \(\varepsilon_i\), are assumed
+to be independent and identically distributed
+
+\begin{equation}
+    \varepsilon_i \sim \mathcal{N}(0,\sigma_\varepsilon^2) \ .
+\end{equation}
+
+The expression for the variance of the response, \(Y\), can be written
+\begin{equation}
+    \begin{split}
+        \textrm{Var}(Y) &= \textrm{Var}\left(\sum_{k=1}^n \beta_k x^{(k)}\right)+ \sigma_\varepsilon^2\\
+        & = \sum_{i=1}^n \beta_i^2\alpha_i  +2\sum_{k=1}^{p-1}\sum_{l=k+1}^p \beta_k\beta_l\rho_{kl} + \sigma_\varepsilon^2 \ ,
+    \end{split}
+    \label{y_var}
+\end{equation}
+
+where \(\alpha_i\) denotes the variance of \(x^{(i)}\) and
+\(\rho_{i,j}\) denotes the covariance between \(x_i\) and \(x_j\). From
+the previous equation we see that it is easy to decompose the variance
+if the regressors are uncorrelated. When the regressors are
+uncorrelated, however, it is not as clear how to decompose the variance.
+The LMG-method, as suggested by \cite{lindeman1980introduction},
+revolves around permuting variables in subset models of the full model
+and then looking at the increment in \(R^2\) when a regressor is added
+to the model.
+
+It is at this point useful to introduce some notation that will simplify
+calculations. The regressors will be labeled and denoted
+\(X^{(1)},\cdots, X^{(p)}\). The order of which regressors are entered
+into the model is denoted \(r = (r_1, \cdots, r_p)\), which is a
+permutation of the regressors with indices \(\{1, \cdots, p\}\). The set
+of regressors that appears before \(X^{(1)}\) in permutation \(r\) is
+denoted \(S_1(r)\). In general, we have that the set of regressors that
+appear before the \(i\)-th regressor, \(X^{(i)}\) in permutation \(r\)
+is denoted \(S_i(r)\).
+
+\cite{statPractice2007} defines evar(.) and svar(.) to further simplify
+the calculations
+
+\%mention permutations \begin{equation}
+    \begin{split}
+        &\textrm{evar}(S) = \textrm{Var}(Y) - \textrm{Var}(Y|X_j, j\in S) \\
+        &\textrm{svar}(M|S) = \textrm{evar}(M \cup S) - \textrm{evar}(S) \ ,
+    \end{split}
+\end{equation}
+
+where evar(.) denotes the explained variance of a model with regressors
+from the set \(S\) of regressors and svar(.) denotes the increase in
+explained variance when adding the regressors from the set \(M\) of
+regressors to a model that already contains the regressors from the set
+\(S\).
+
+The importance assigned to a regressor is equal to the average increment
+in \(R^2\) when adding the regressor to the model for all possible
+permutations of regressors. Without loss of generality
+\cite{statPractice2007} defines the LMG for the \(1\)-st predictor,
+\(X^{(1)}\), as \begin{equation}
+    \textrm{LMG}(1) = \frac{1}{p!} \sum_{\pi\textrm{ permutations}} \textrm{svar}(\{1\}|S_1(\pi)),
+\end{equation}
+
+but this can easily be generalized to the \(i-th\) predictor,
+\(X^{(i)}\), as
+
+\begin{equation}
+    \textrm{LMG}(i) = \frac{1}{p!} \sum_{\pi\textrm{ permutations}} \textrm{svar}(\{i\}|S_i(\pi)),
+    \label{LMG1}
+\end{equation}
+
+This is a unweighted sum of all orderings that contribute to the
+relative importance metric for regressor i.
+
+It is possible to rewrite the expression in terms of \(R^2\), then it
+becomes
+
+\begin{equation}
+     \textrm{LMG}(i) = \frac{1}{p!} \sum_{S \subseteq (1,\cdots, p) \setminus i} n(S)!(p-n(S)-1)! \bigg(R^2\big(\{i\}\cup S\big) - R^2\big(S\big)\bigg)\ ,
+     \label{LMG_fast}
+\end{equation} where \(n(S)!\) is the number of possible permutations of
+the predictors that appears before \(X^{(i)}\) and \((p-n(S)-1)!\) is
+the number of possible permutations of the predictors that appear after
+\(X^{(i)}\).
+
+The LMG-expression for predictor \(i\), \(X^{(i)}\), is also valid for
+linear mixed models, however, \(R^2\) has to be calculated as described
+by Nakagawa and Schielzeth (2013) (described here in the calc.R2
+section). The random intercept is always left in the model. In this
+situation, the random intercept does not get assigned an importance, but
+the importances should decompose the explained variance properly with no
+negative shares regardless of whether \(R^2_c\) or \(R^2_m\) is used to
+compute the explained variance. If \(R^2_c\) is used, then the shares
+assigned to regressors are expected to be artificially high when not
+assigning any importance to the random intercept. The reason is that the
+random intercept variance is then (wrongly) interpreted as variance
+explained by the fixed effects because the random intercept is already
+in the model when the first predictor is added. Using \(R^2_m\) defined
+in equation \eqref{marginalR2}, instead of \(R^2_c\) when calculating
+the importances is expected to result in more realistic shares being
+assigned to the regressors. The proper decomposition holds in both
+scenarios, however, when \(R^2_m\) is used to assess the model-fit, the
+relative importances sum up to the variance explained by the fixed
+effects alone.
+
+It is meaningful to assign an importance to the random intercept equal
+to the difference of the marginal- and conditional \(R^2\) of the full
+model since \(R^2_m\) will always be smaller than \(R^2_c\). The random
+intercept importance can then be defined as
+
+\begin{equation}
+    \textrm{LMG}(RI) = R_c^2- R_m^2  = \frac{\sigma_\gamma^2}{\sigma_f^2 +\sigma_\gamma^2 + \sigma_\varepsilon^2} \ ,
+    \label{person_importance_R2}
+\end{equation}
+
+whereas \(R^2_c\) and \(R^2_m\) correspond to the explained variance of
+the full models.
+
+\hypertarget{example-1}{%
+\subsubsection{Example}\label{example-1}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(lme4)}
+\KeywordTok{library}\NormalTok{(relimpLMM)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#read data}
+\NormalTok{lmm.data <-}\StringTok{ }\KeywordTok{read.table}\NormalTok{(}\StringTok{"http://bayes.acs.unt.edu:8083/BayesContent/class/Jon/R_SC/Module9/lmm.data.txt"}\NormalTok{,}
+                       \DataTypeTok{header=}\OtherTok{TRUE}\NormalTok{, }\DataTypeTok{sep=}\StringTok{","}\NormalTok{, }\DataTypeTok{na.strings=}\StringTok{"NA"}\NormalTok{, }\DataTypeTok{dec=}\StringTok{"."}\NormalTok{, }\DataTypeTok{strip.white=}\OtherTok{TRUE}\NormalTok{)}
+\CommentTok{#fit a random intercept model}
+\NormalTok{RI.model <-}\StringTok{ }\KeywordTok{lmer}\NormalTok{(extro }\OperatorTok{~}\StringTok{ }\NormalTok{open }\OperatorTok{+}\StringTok{ }\NormalTok{agree }\OperatorTok{+}\StringTok{ }\NormalTok{social }\OperatorTok{+}\StringTok{ }\NormalTok{(}\DecValTok{1}\OperatorTok{|}\NormalTok{school), }\DataTypeTok{data=}\NormalTok{lmm.data)}
+\KeywordTok{calc.relimp.lmm}\NormalTok{(RI.model, }\StringTok{"extro"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Registered S3 method overwritten by 'DoE.base':
+##   method           from       
+##   factorize.factor conf.design
+\end{verbatim}
+
+\begin{verbatim}
+## creating full factorial with 4 runs ...
+\end{verbatim}
+
+\begin{verbatim}
+##         importances
+## open   3.113184e-05
+## agree  1.917371e-04
+## social 1.090760e-05
+## school 9.305268e-01
+\end{verbatim}
+
+\hypertarget{references}{%
+\section*{References}\label{references}}
+\addcontentsline{toc}{section}{References}
+
+\hypertarget{refs}{}
+\leavevmode\hypertarget{ref-statPractice2007}{}%
+Grömping, Ulrike. 2007. ``Estimators of Relative Importance in Linear
+Regression Based on Variance Decomposition.'' \emph{The American
+Statistician} 61 (2): 139--47.
+
+\leavevmode\hypertarget{ref-lindeman1980introduction}{}%
+Lindeman, Richard Harold, Peter Francis Merenda, and Ruth Z. Gold. 1980.
+\emph{Introduction to Bivariate and Multivariate Analysis}. Glenview,
+IL: Scott, Foresman.
+
+\leavevmode\hypertarget{ref-nakagawa2013}{}%
+Nakagawa, Shinichi, and Holger Schielzeth. 2013. ``A General and Simple
+Method for Obtaining \(R^2\) from Generalized Linear Mixed-Effects
+Models.'' \emph{Methods in Ecology and Evolution} 4 (2): 133--42.
+
+\end{document}

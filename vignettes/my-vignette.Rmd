@@ -1,0 +1,191 @@
+---
+title: "relimpLMM vignette"
+output:
+  html_document:
+    df_print: paged
+  html_notebook: default
+  pdf_document: default
+bibliography: ref.bib
+biblio-style: chicago
+---
+
+This vignette gives an overview over the functions in the relimpLMM package. This hopefully helps to understand the purpose of the functions and how they are used. First I will give a brief description of the purpose of the functions and what they do, then I will provide some examples of how they can be used. 
+
+## Functions
+
+There are two main functions in this package:
+
+1. calc.R2
+    + calculates the explained variance in a linear mixed model
+2. calc.relimp.lmm
+    + calculates the realative variable importance of the variables in a linear mixed model
+
+### installing the package
+
+The package can be installed directly from github.
+```{r, eval = F}
+library(devtools)
+install_github("oliverbyhring/relimpLMM")
+library(relimpLMM)
+```
+
+
+## calc.R2
+### Description
+Defining $R^2$ in a random intercept model is not as straightforward as one might first think.  It is therefore not uncommon that information criteria are used as comparison tools for mixed models. Information criteria are methods that evaluate the probability of the data given the fitted model. These are used to compare different models, however, there are several limitations to using information criteria. They do not give any information about the overall goodness of model fit and they also provide no information about how much of the variance that is explained by the model [@nakagawa2013]. It is therefore of interest to find a way to generalize $R^2$ to random intercept models.
+
+When defining $R^2$ in random intercept models a choice has to be made whether to define $R^2$ as the variance explained by the fixed effect alone or the variance explained by the random and fixed effects combined. @nakagawa2013 distinguishes between \textit{marginal} $R^2$, denoted $R^2_{\textrm{LMM(m)}}$, and \textit{conditional} $R^2$, denoted $R^2_{\textrm{LMM(c)}}$. $R^2_{\textrm{LMM(m)}}$ is the proportion of variance explained by the fixed effect components alone and $R^2_{\textrm{LMM(c)}}$ is the proportion of variance explained by both the fixed effects and the variance of the random effects. 
+
+For a random intercept model, the model equation for the $j$-th observation of the $i$-th individual is
+\begin{equation}
+    y_{ij} = \beta_0 + \gamma_{i} + \boldsymbol{\beta}^T \boldsymbol{x}_{ij} + \varepsilon_{ij} \ ,
+    \label{random_intercept_model}
+\end{equation}
+where $\beta_0$ is the fixed population intercept, $\boldsymbol{\beta}$ is the the $(1 \times p)$ vector of fixed population slopes of the covariates $\boldsymbol{x}_{ij}$ and $\gamma_{i}$ is the individual specific deviance from the population intercept. The residuals, $\varepsilon_{ij}$, and the individual specific deviance from the population intercept is assumed to be i.i.d. normal with mean zero and variance $\sigma_\varepsilon^2$ and $\sigma_\gamma^2$ respectively, that is,
+
+\begin{equation*}
+\begin{split}
+    \varepsilon_{ij} &\sim \mathcal{N} \left(0, \sigma_\varepsilon^2 \right)\\
+    \gamma_{i} &\sim \mathcal{N} \left(0, \sigma_\gamma^2 \right)\ .
+\end{split}
+\end{equation*}
+
+Let $\rho_{ij}$ be the covariance between the fixed regressors $X^{(i)}$ and $X^{(j)}$. Then for the random intercept model the variance from the fixed effect can be expressed as
+
+
+\begin{equation}
+    \begin{split}
+        \sigma_f^2 &= \textrm{Var}\left(\sum_{k=1}^n \beta_k x^{(k)}\right)\\
+        & = \sum_{i=1}^n \beta_i^2\alpha_i  +2\sum_{k=1}^{p-1}\sum_{l=k+1}^p \beta_k\beta_l\rho_{kl} ,
+    \end{split}
+    \label{fixed_effect_var}
+\end{equation}
+where $\alpha_i$ is the variance of the $i$-th covariate.
+
+The expression for the marginal $R^2$ can be written as a ratio between the variance of the fixed effects and the total variance, that is
+
+\begin{equation}
+    R^2_{\textrm{LMM(m)}} = \frac{\sigma_f^2}{\sigma_f^2 +\sigma_\gamma^2  + \sigma_\varepsilon^2} \ .
+    \label{marginalR2}
+\end{equation}
+
+Equivalently the conditional $R^2$ can be written 
+
+\begin{equation}
+    R^2_{\textrm{LMM(c)}} = \frac{\sigma_f^2 + \sigma_\gamma^2}{\sigma_f^2 +\sigma_\gamma^2 + \sigma_\varepsilon^2}\ .
+    \label{conditional_R2}
+\end{equation}
+
+### Example
+```{r}
+library(relimpLMM)
+library(lme4)
+```
+
+```{r}
+data("sleepstudy")
+RI.model <- lmer(Reaction ~ Days + (1|Subject), data = sleepstudy)
+calc.R2(RI.model, marginal.r2 = FALSE)
+```
+
+## calc.relimp.lmm
+
+### Description
+
+There exists R packages that provides relative importance measures in regular linear models, e.g. relaimpo. This package uses a method provided by @lindeman1980introduction, often refered to as the LMG-method and is limited to regular linear models. @statPractice2007 has reviewed the method in detail and compared it to other relative variable importance measures. I have worked on an extension of this method and the function calc.relimp.lmm is the result of this work. 
+
+
+The LMG-method aims to decompose the explained variance of a linear model. The relative importance assigned to a regressor can therefore be interpreted as the variance explained by the respective regressor. We begin by looking at a regular linear model of the form
+\begin{equation}
+    y_i = \beta_0 + \boldsymbol{\beta}^T\boldsymbol{x}_i +\varepsilon_i \ ,
+    \label{regular_LM}
+\end{equation}
+where  $y_i$ is the $i$-th response, $\beta_0$ is the model intercept, $\boldsymbol{\beta}^T$ is the vector of fixed slopes corresponding to the covariates $\boldsymbol{x}_i$ with elements $(x_{i}^{(1)},x_{i}^{(2)},\cdots,x_{i}^{(p)})$ and $\varepsilon_i$ is the $i$-th residual. Since there are $p$ covariates, $\boldsymbol{\beta}$ and $\boldsymbol{x_i}$ are $(p \times 1)$ vectors.  The residuals, $\varepsilon_i$, are assumed to be independent and identically distributed
+
+\begin{equation}
+    \varepsilon_i \sim \mathcal{N}(0,\sigma_\varepsilon^2) \ .
+\end{equation}
+
+
+The expression for the variance of the response, $Y$, can be written
+\begin{equation}
+    \begin{split}
+        \textrm{Var}(Y) &= \textrm{Var}\left(\sum_{k=1}^n \beta_k x^{(k)}\right)+ \sigma_\varepsilon^2\\
+        & = \sum_{i=1}^n \beta_i^2\alpha_i  +2\sum_{k=1}^{p-1}\sum_{l=k+1}^p \beta_k\beta_l\rho_{kl} + \sigma_\varepsilon^2 \ ,
+    \end{split}
+    \label{y_var}
+\end{equation}
+
+where $\alpha_i$ denotes the variance of $x^{(i)}$ and $\rho_{i,j}$ denotes the covariance between $x_i$ and $x_j$. From the previous equation we see that it is easy to decompose the variance if the regressors are uncorrelated. When the regressors are uncorrelated, however, it is not as clear how to decompose the variance. The LMG-method, as suggested by \cite{lindeman1980introduction}, revolves around permuting variables in subset models of the full model and then looking at the increment in $R^2$ when a regressor is added to the model.
+
+It is at this point useful to introduce some notation that will simplify calculations. The regressors will be labeled and denoted $X^{(1)},\cdots, X^{(p)}$. The order of which regressors are entered into the model is denoted $r = (r_1, \cdots, r_p)$, which is a permutation of the regressors with indices $\{1, \cdots, p\}$. The set of regressors that appears before $X^{(1)}$ in permutation $r$ is denoted $S_1(r)$. In general, we have that the set of regressors that appear before the $i$-th regressor, $X^{(i)}$ in permutation $r$ is denoted $S_i(r)$.
+
+
+\cite{statPractice2007} defines evar(.) and svar(.) to further simplify the calculations
+
+
+%mention permutations
+\begin{equation}
+    \begin{split}
+        &\textrm{evar}(S) = \textrm{Var}(Y) - \textrm{Var}(Y|X_j, j\in S) \\
+        &\textrm{svar}(M|S) = \textrm{evar}(M \cup S) - \textrm{evar}(S) \ ,
+    \end{split}
+\end{equation}
+
+where evar(.) denotes the explained variance of a model with regressors from the set $S$ of regressors and svar(.) denotes the increase in explained variance when adding the regressors from the set $M$ of regressors to a model that already contains the regressors from the set $S$. 
+
+
+
+
+The importance assigned to a regressor is equal to the average increment in $R^2$ when adding the regressor to the model for all possible permutations of regressors. Without loss of generality \cite{statPractice2007} defines the LMG for the $1$-st predictor, $X^{(1)}$, as
+\begin{equation}
+    \textrm{LMG}(1) = \frac{1}{p!} \sum_{\pi\textrm{ permutations}} \textrm{svar}(\{1\}|S_1(\pi)),
+\end{equation}
+
+but this can easily be generalized to the $i-th$ predictor, $X^{(i)}$, as
+
+\begin{equation}
+    \textrm{LMG}(i) = \frac{1}{p!} \sum_{\pi\textrm{ permutations}} \textrm{svar}(\{i\}|S_i(\pi)),
+    \label{LMG1}
+\end{equation}
+
+This is a unweighted sum of all orderings that contribute to the relative importance metric for regressor i.
+
+It is possible to rewrite the expression in terms of $R^2$, then it becomes
+ 
+\begin{equation}
+     \textrm{LMG}(i) = \frac{1}{p!} \sum_{S \subseteq (1,\cdots, p) \setminus i} n(S)!(p-n(S)-1)! \bigg(R^2\big(\{i\}\cup S\big) - R^2\big(S\big)\bigg)\ ,
+     \label{LMG_fast}
+\end{equation}
+where $n(S)!$ is the number of possible permutations of the predictors that appears before $X^{(i)}$ and $(p-n(S)-1)!$ is the number of possible permutations of the predictors that appear after $X^{(i)}$.
+
+The LMG-expression for predictor $i$, $X^{(i)}$, is also valid for linear mixed models, however, $R^2$ has to be calculated as described by @nakagawa2013 (described here in the calc.R2 section). The random intercept is always left in the model. In this situation, the random intercept does not get assigned an importance, but the importances should decompose the explained variance properly with no negative shares regardless of whether $R^2_c$ or $R^2_m$ is used to compute the explained variance. If $R^2_c$ is used, then the shares assigned to regressors are expected to be artificially high when not assigning any importance to the random intercept. The reason is that the random intercept variance is then (wrongly) interpreted as variance explained by the fixed effects because the random intercept is already in the model when the first predictor is added. Using $R^2_m$ defined in equation \eqref{marginalR2}, instead of $R^2_c$ when calculating the importances is expected to result in more realistic shares being assigned to the regressors. The proper decomposition holds in both scenarios, however, when $R^2_m$ is used to assess the model-fit, the relative importances sum up to the variance explained by the fixed effects alone. 
+
+It is meaningful to assign an importance to the random intercept equal to the difference of the marginal- and conditional $R^2$ of the full model since $R^2_m$ will always be smaller than $R^2_c$. The random intercept importance can then be defined as
+
+\begin{equation}
+    \textrm{LMG}(RI) = R_c^2- R_m^2  = \frac{\sigma_\gamma^2}{\sigma_f^2 +\sigma_\gamma^2 + \sigma_\varepsilon^2} \ ,
+    \label{person_importance_R2}
+\end{equation}
+
+
+whereas $R^2_c$ and $R^2_m$ correspond to the explained variance of the full models.
+
+### Example
+
+```{r}
+library(lme4)
+library(relimpLMM)
+```
+
+```{r}
+#read data
+lmm.data <- read.table("http://bayes.acs.unt.edu:8083/BayesContent/class/Jon/R_SC/Module9/lmm.data.txt",
+                       header=TRUE, sep=",", na.strings="NA", dec=".", strip.white=TRUE)
+#fit a random intercept model
+RI.model <- lmer(extro ~ open + agree + social + (1|school), data=lmm.data)
+calc.relimp.lmm(RI.model, "extro")
+```
+
+
+# References
